@@ -3,12 +3,11 @@ package com.oopexample;
 public class CommandEvent {
 	private Integer commandId;
 	private String response;
-	
 	public CommandEvent() {
 		
 	}
 
-	public CommandEvent(int commandId, String response) {
+	public CommandEvent(int commandId, String response, boolean status) {
 		super();
 		this.commandId = commandId;
 		this.response = response;
@@ -47,5 +46,10 @@ public class CommandEvent {
 		}
 
 		return (other.getCommandId().equals(this.getCommandId()));
+	}
+
+	public boolean getStatus() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

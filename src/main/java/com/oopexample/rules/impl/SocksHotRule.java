@@ -10,8 +10,8 @@ public class SocksHotRule implements Rule{
 	
 
 	@Override
-	public boolean valid(DressWizard context, Temperature temp, Command command) {
-		if ( temp == Temperature.HOT) {
+	public boolean valid(DressWizard context, Command command) {
+		if ( context.getTemp() == Temperature.HOT) {
 			return false;
 		}
 		return true;

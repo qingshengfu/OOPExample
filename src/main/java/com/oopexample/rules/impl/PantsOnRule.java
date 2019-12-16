@@ -10,7 +10,7 @@ public class PantsOnRule implements Rule {
 	
 	
 	@Override
-	public boolean valid(DressWizard context, Temperature temp, Command command ) {
+	public boolean valid(DressWizard context, Command command ) {
 		
 		return context.isTaskDone(DressWizard.PANTS_ON_COMM);
 	}

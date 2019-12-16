@@ -10,8 +10,8 @@ public class LeaveHouseRule implements Rule{
 
 
 	@Override
-	public boolean valid(DressWizard context, Temperature temp, Command command) {
-		return context.isFinished( temp );
+	public boolean valid(DressWizard context, Command command) {
+		return context.isFinished( );
 		
 	}
 

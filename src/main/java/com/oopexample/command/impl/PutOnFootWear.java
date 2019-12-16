@@ -4,43 +4,46 @@ import com.oopexample.CommandEvent;
 import com.oopexample.DressWizard;
 import com.oopexample.Temperature;
 import com.oopexample.command.CommandI;
-import com.oopexample.validator.Validator;
 
 public class PutOnFootWear extends Command implements CommandI{
 
-	public PutOnFootWear(int id, String name, Validator validator) {
-		super(id, name, validator);
+	public PutOnFootWear(int id, String name) {
+		super(id, name);
 	}
 
 	@Override
-	public CommandEvent action(Temperature temperature) {
-		if ( checkPrecondition( temperature, this )) {
+	public CommandEvent action(DressWizard context) {
+		if ( checkPrecondition( context )) {
 			CommandEvent res = null;
-			if ( temperature == Temperature.HOT) {
-				res = new CommandEvent(this.getId(), "sandals");
+			if ( context.getTemp() == Temperature.HOT) {
+				res = new CommandEvent(this.getId(), "sandals", true);
 				
-			} else if ( temperature == Temperature.COLD ) {
-				res = new CommandEvent(this.getId(), "boots");
+			} else if ( context.getTemp() == Temperature.COLD ) {
+				res = new CommandEvent(this.getId(), "boots", true);
 			}
 			
 			return res;
 		} else {
-			return new CommandEvent(DressWizard.FAIL_COMM, "fail");
+			return new CommandEvent(DressWizard.FAIL_COMM, "fail", false);
 		}	
 	}
 
+	@Override
 	public int getId() {
 		return id;
 	}
 
+	@Override
 	public void setId(int id) {
 		this.id = id;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}

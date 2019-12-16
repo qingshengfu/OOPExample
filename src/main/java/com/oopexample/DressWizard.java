@@ -27,30 +27,26 @@ import com.oopexample.rules.impl.PantsOnRule;
 import com.oopexample.rules.impl.ShirtOnRule;
 import com.oopexample.rules.impl.SockOnRule;
 import com.oopexample.rules.impl.SocksHotRule;
-import com.oopexample.rules.impl.ValidCommandRule;
-import com.oopexample.validator.Validator;
-import com.oopexample.validator.impl.ValidatorImpl;
 
+/**
+ * 
+ * @author andy
+ *
+ */
 public class DressWizard {
-
+   // not thread safe
 	private Map<Integer, Command> availableCommands;
 	private Set<Integer> toDos;
 	private List<CommandEvent> doneList;
-	private Command failCommand;
-	boolean failed;
+	private Temperature temp;;
 
 	public DressWizard() {
 		availableCommands = new HashMap<>();
 		toDos = new HashSet<>();
 		doneList = new ArrayList<>();
-		failCommand = new FailCommand(FAIL_COMM, "Fail", new ValidatorImpl(this));
-		failed = false;
 	}
 
 	public void initData() {
-		/*
-		 * initialize rules
-		 */
 		Rule jacketHotRule = new JacketHotRule();
 		Rule leaveHouseRule = new LeaveHouseRule();
 		Rule onlyOneClothRule = new OnlyOneClothingRule();
@@ -59,36 +55,23 @@ public class DressWizard {
 		Rule shirtOnRule = new ShirtOnRule();
 		Rule SockOnRule = new SockOnRule();
 		Rule sockHotRule = new SocksHotRule();
-		Rule validCommandRule = new ValidCommandRule();
-
-		/*
-		 * validators
-		 */
-		Validator putOnFootWearValidator = new ValidatorImpl(this, validCommandRule, pajamaOffRule, pantOnRule,
-				SockOnRule, onlyOneClothRule);
-		Validator putOnHeadWearValidator = new ValidatorImpl(this, validCommandRule, pajamaOffRule, shirtOnRule,
-				onlyOneClothRule);
-		Validator putOnSockValidator = new ValidatorImpl(this, validCommandRule, pajamaOffRule, sockHotRule,
-				onlyOneClothRule);
-		Validator putOnShirtValidator = new ValidatorImpl(this, validCommandRule, validCommandRule, pajamaOffRule,
-				onlyOneClothRule);
-		Validator putOnJacketValidator = new ValidatorImpl(this, validCommandRule, pajamaOffRule, shirtOnRule,
-				jacketHotRule, onlyOneClothRule);
-		Validator putOnPantsValidator = new ValidatorImpl(this, validCommandRule, pajamaOffRule, onlyOneClothRule);
-		Validator leaveHouseValidator = new ValidatorImpl(this, validCommandRule, leaveHouseRule, onlyOneClothRule);
-		Validator takeOffPajamaValidator = new ValidatorImpl(this, validCommandRule, onlyOneClothRule);
 
 		/*
 		 * initialize available commands
 		 */
-		addCommand(new PutOnFootWear(FOORT_WEAR_COMM, "Put on foot ware", putOnFootWearValidator));
-		addCommand(new PutOnHeadWear(HEAD_WEAR_COMM, "Put on headwear", putOnHeadWearValidator));
-		addCommand(new PutOnSock(SOCK_COMM, "Put on sock", putOnSockValidator));
-		addCommand(new PutOnShirt(SHIRT_COMM, "Put on shirt", putOnShirtValidator));
-		addCommand(new PutOnJacket(JACKET_COMM, "Put on jack", putOnJacketValidator));
-		addCommand(new PutOnPants(PANTS_ON_COMM, "Put on pants", putOnPantsValidator));
-		addCommand(new LeaveHouse(LEAVEHOUSE_COMM, "Leaving House", leaveHouseValidator));
-		addCommand(new TakOffPajama(PAJAMA_OFF_COMM, "Take off pajamas", takeOffPajamaValidator));
+		addCommand(new PutOnFootWear(FOORT_WEAR_COMM, "Put on foot ware").addRules(pajamaOffRule, pantOnRule,
+				SockOnRule, onlyOneClothRule));
+		addCommand(new PutOnHeadWear(HEAD_WEAR_COMM, "Put on headwear").addRules(pajamaOffRule, shirtOnRule,
+				onlyOneClothRule));
+		addCommand(new PutOnSock(SOCK_COMM, "Put on sock").addRules(pajamaOffRule, sockHotRule,
+				onlyOneClothRule));
+		addCommand(new PutOnShirt(SHIRT_COMM, "Put on shirt").addRules(pajamaOffRule,
+				onlyOneClothRule));
+		addCommand(new PutOnJacket(JACKET_COMM, "Put on jack").addRules(pajamaOffRule, shirtOnRule,
+				jacketHotRule, onlyOneClothRule));
+		addCommand(new PutOnPants(PANTS_ON_COMM, "Put on pants").addRules(pajamaOffRule, onlyOneClothRule));
+		addCommand(new LeaveHouse(LEAVEHOUSE_COMM, "Leaving House").addRules(leaveHouseRule, onlyOneClothRule));
+		addCommand(new TakOffPajama(PAJAMA_OFF_COMM, "Take off pajamas").addRules(onlyOneClothRule));
 
 		/*
 		 * initialize toDo list for dress up
@@ -96,51 +79,28 @@ public class DressWizard {
 		availableCommands.values().forEach(command -> toDos.add(command.getId()));
 	}
 
-	public boolean containsToDo(int commandId) {
-		return toDos.contains(commandId);
-	}
-
-	public boolean containsEvent(CommandEvent name) {
-		return doneList.contains(name);
-	}
-
-	public boolean isValidCommand(int commandId) {
-		return availableCommands.containsKey(commandId);
-	}
-
-	public boolean isFinished(Temperature temp) {
-		if (temp == Temperature.COLD) {
+	public boolean isFinished() {
+		if (this.temp == Temperature.COLD) {
 			return toDos.size() == 1 && toDos.contains(LEAVEHOUSE_COMM);
-		} else {
-			return toDos.size() == 3 && toDos.contains(SOCK_COMM) && toDos.contains(JACKET_COMM)
-					&& toDos.contains(LEAVEHOUSE_COMM);
-		}
+		} 
+		
+		return toDos.size() == 3 && toDos.contains(SOCK_COMM) && toDos.contains(JACKET_COMM)
+				&& toDos.contains(LEAVEHOUSE_COMM);
 
 	}
 
-	public boolean isFaied() {
-		return failed;
-	}
-
-	public void addWorkDone(CommandEvent event) {
+	public boolean addWorkDone(CommandEvent event) {
 		toDos.remove(event.getCommandId());
 		doneList.add(event);
-	}
-
-	public void setFailed(boolean failed) {
-		this.failed = failed;
+		return event.getStatus();
 	}
 
 	public Command getAvailableCommand(int command) {
 		Command comm = availableCommands.get(command);
 		if (comm == null) {
-			return getFailCommand();
+			return new FailCommand(command, "fail");
 		}
 		return comm;
-	}
-
-	public Command getFailCommand() {
-		return failCommand;
 	}
 
 	public boolean isTaskDone(int commandId) {
@@ -156,14 +116,18 @@ public class DressWizard {
 	}
 
 	public void runWizard(Temperature temperature, List<Integer> commands) {
-		for (Integer command : commands) {
-			CommandEvent event = getAvailableCommand(command).action(temperature);
-			addWorkDone(event);
-			if (event.getCommandId().equals(FAIL_COMM)) {
-				setFailed(true);
-				break;
-			}
-		}
+		this.temp = temperature;
+		List<Command> cmds = commands.stream().map(i -> getAvailableCommand(i))
+				.collect(Collectors.toList());
+		
+		cmds.stream().map(cmd -> cmd.action(this))
+        	.map(event -> this.addWorkDone(event))
+        	.anyMatch(t -> !t);
+		
+	}
+	
+	public Temperature getTemp() {
+		return this.temp;
 	}
 
 	public static int FAIL_COMM = 0;

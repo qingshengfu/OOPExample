@@ -1,34 +1,29 @@
 package com.oopexample.command.impl;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.oopexample.CommandEvent;
 import com.oopexample.DressWizard;
-import com.oopexample.Temperature;
 import com.oopexample.command.CommandI;
-import com.oopexample.validator.Validator;
+import com.oopexample.rules.Rule;
 
 public abstract class Command implements CommandI{
 	
 	protected int id;
 	protected String name;
-	protected Validator validator;
+	protected List<Rule> rules;;
 	
-	public Command(int id, String name, Validator validator) {
+	public Command(int id, String name) {
 		super();
 		this.id = id;
 		this.name = name;
-		this.validator = validator;
 		
 	}
 	
-	abstract public CommandEvent action(Temperature temperature);
+	@Override
+	abstract public CommandEvent action(DressWizard context);
 	
-	public Validator getValidator() {
-		return validator;
-	}
-
-	public void setValidator(Validator validator) {
-		this.validator = validator;
-	}
 
 	public int getId() {
 		return id;
@@ -46,8 +41,14 @@ public abstract class Command implements CommandI{
 		this.name = name;
 	}
 	
-	protected boolean checkPrecondition(Temperature temp, Command command ) {
-		return validator.valid(temp, command);
+	public Command addRules(Rule...rule) {
+		rules.addAll(Arrays.asList(rule));
+		return this;
+	}
+	
+	protected boolean checkPrecondition(DressWizard context ) {
+		return rules.stream().map( rule -> rule.valid(context, this ))
+	             .reduce(true, (a , b) -> a && b);
 	}
 	
 	

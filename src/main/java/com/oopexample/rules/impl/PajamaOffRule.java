@@ -10,7 +10,7 @@ public class PajamaOffRule implements Rule {
 	
 
 	@Override
-	public boolean valid(DressWizard context, Temperature temp, Command command) {
+	public boolean valid(DressWizard context, Command command) {
 		return context.isTaskDone(DressWizard.PAJAMA_OFF_COMM);
 	}
 

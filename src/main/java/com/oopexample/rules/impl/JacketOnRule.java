@@ -10,8 +10,8 @@ public class JacketOnRule implements Rule{
 	
 
 	@Override
-	public boolean valid(DressWizard context, Temperature temp, Command command) {
-		if ( temp == Temperature.COLD) {
+	public boolean valid(DressWizard context, Command command) {
+		if ( context.getTemp() == Temperature.COLD) {
 			return context.isTaskDone( DressWizard.JACKET_COMM);
 		} else {
 			return true;
