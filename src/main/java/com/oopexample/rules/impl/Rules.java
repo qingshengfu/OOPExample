@@ -9,10 +9,7 @@ import com.oopexample.Temperature;
 public class Rules {
 	
 	public static Function<Integer, Predicate<CommandEvent>> checkTaskDone = c -> {
-		return e -> {
-			boolean x = e.isCommandFinished(c);
-			return x;
-		};
+		return e -> e.isCommandFinished(c);
 	};
 	
 	public static Function<Integer, Predicate<CommandEvent>> OnlyOneCloth = c -> {
@@ -20,10 +17,7 @@ public class Rules {
 	};
 	
 	public static Function<Integer, Predicate<CommandEvent>> NoError = c -> {
-		return e -> {
-			boolean x = !e.isError();
-			return x;
-		};
+		return e -> !e.isError();
 	};
 	
 	public static Predicate<CommandEvent> IsHot = c -> {
