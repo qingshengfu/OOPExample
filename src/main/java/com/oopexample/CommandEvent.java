@@ -1,58 +1,56 @@
 package com.oopexample;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class CommandEvent {
-	private Integer commandId;
-	private String response;
-	private boolean status;
+	private Set<Integer> commandIds;
+	private List<String> responses;
+	private Temperature temp;
+	private boolean error;
 	
-	public CommandEvent() {
-		
+	public CommandEvent(Temperature temp) {
+		commandIds = new HashSet<>();
+		responses = new ArrayList<>();
+		this.temp = temp;
 	}
 
-	public CommandEvent(int commandId, String response, boolean status) {
-		super();
-		this.commandId = commandId;
-		this.response = response;
-		this.status = status;
+	public boolean isError() {
+		return error;
 	}
 
-	public String getResponse() {
-		return response;
+	public CommandEvent setError(boolean status) {
+		this.error = status;
+		return this;
 	}
 
-	public void setResponse(String response) {
-		this.response = response;
+	public CommandEvent addResponse(String response) {
+		responses.add(response);
+		return this;
 	}
 	
-
-	public Integer getCommandId() {
-		return commandId;
+	public CommandEvent addFinishedCommand(Integer commandId) {
+		commandIds.add(commandId);
+		return this;
+	}
+	
+	public boolean isCommandFinished(Integer commandId) {
+		return commandIds.contains(commandId);
 	}
 
-	public void setCommandId(int commandId) {
-		this.commandId = commandId;
+	public Temperature getTemp() {
+		return temp;
 	}
 
-	@Override
-	public int hashCode() {
-		return getCommandId().hashCode();
+	public void setTemp(Temperature temp) {
+		this.temp = temp;
 	}
-	@Override
-	public boolean equals(Object obj) {
-		CommandEvent other = (CommandEvent) obj;
-		if (this == other) {
-			return true;
-		}
-
-		if (other == null || other.getClass() != other.getClass()) {
-			return false;
-		}
-
-		return (other.getCommandId().equals(this.getCommandId()));
+	
+	public String printResponse() {
+		return responses.stream().collect(Collectors.joining(", "));
 	}
-
-	public boolean getStatus() {
-		// TODO Auto-generated method stub
-		return status;
-	}
+	
 }

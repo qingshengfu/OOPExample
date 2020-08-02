@@ -1,23 +1,20 @@
 package com.oopexample.command.impl;
 
+import com.oopexample.CommandConstants;
 import com.oopexample.CommandEvent;
-import com.oopexample.DressWizard;
-import com.oopexample.command.CommandI;
+import com.oopexample.rules.impl.Rules;
 
-public class TakOffPajama extends Command implements CommandI {
+public class TakOffPajama extends Command{
 
 	public TakOffPajama(int id, String name) {
 		super(id, name);
+		predicate = Rules.OnlyOneCloth.apply(CommandConstants.PAJAMA_OFF_COMM)
+		        .and(Rules.NoError.apply(CommandConstants.PAJAMA_OFF_COMM));
 	}
 
 	@Override
-	public CommandEvent action(DressWizard context) {
-		if ( checkPrecondition(context)) {
-			return new CommandEvent(this.getId(), "Removing PJs", true);
-		} else {
-			return new CommandEvent(DressWizard.FAIL_COMM, "fail", false);
-		}	
-		
+	protected CommandEvent handle(CommandEvent input) {
+		return input.addResponse("Removing PJs");
 	}
 
 }

@@ -1,29 +1,22 @@
 package com.oopexample.command.impl;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.oopexample.CommandEvent;
-import com.oopexample.DressWizard;
-import com.oopexample.command.CommandI;
-import com.oopexample.rules.Rule;
 
-public abstract class Command implements CommandI{
+public abstract class Command{
+	
+	protected Predicate<CommandEvent> predicate;
 	
 	protected int id;
 	protected String name;
-	protected List<Rule> rules;;
 	
 	public Command(int id, String name) {
 		super();
 		this.id = id;
 		this.name = name;
-		
 	}
-	
-	@Override
-	abstract public CommandEvent action(DressWizard context);
-	
 
 	public int getId() {
 		return id;
@@ -41,16 +34,22 @@ public abstract class Command implements CommandI{
 		this.name = name;
 	}
 	
-	public Command addRules(Rule...rule) {
-		rules.addAll(Arrays.asList(rule));
-		return this;
+	abstract protected CommandEvent handle(CommandEvent event);
+	
+	public CommandEvent apply(CommandEvent event) {
+		if(predicate.test(event)) {
+			event = handle(event);
+		}
+		else if(!event.isError()){
+			event.setError(true);
+			event.addResponse("fail");
+		}
+		event.addFinishedCommand(this.getId());
+		return event;
 	}
 	
-	protected boolean checkPrecondition(DressWizard context ) {
-		return rules.stream().map( rule -> rule.valid(context, this ))
-	             .reduce(true, (a , b) -> a && b);
+	public Function<CommandEvent, CommandEvent> get() {
+		return x -> this.apply(x);
 	}
-	
-	
 
 }

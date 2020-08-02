@@ -1,28 +1,29 @@
 package com.oopexample.command.impl;
 
+import com.oopexample.CommandConstants;
 import com.oopexample.CommandEvent;
-import com.oopexample.DressWizard;
 import com.oopexample.Temperature;
-import com.oopexample.command.CommandI;
+import com.oopexample.rules.impl.Rules;
 
-public class PutOnHeadWear extends Command implements CommandI{
-
+public class PutOnHeadWear extends Command {
+	
 	public PutOnHeadWear(int id, String name) {
 		super(id, name);
+		predicate = Rules.checkTaskDone.apply(CommandConstants.PAJAMA_OFF_COMM)
+				        .and(Rules.OnlyOneCloth.apply(CommandConstants.HEAD_WEAR_COMM))
+				        .and(Rules.checkTaskDone.apply(CommandConstants.SHIRT_COMM))
+				        .and(Rules.NoError.apply(CommandConstants.HEAD_WEAR_COMM));
 	}
 
 	@Override
-	public CommandEvent action(DressWizard context) {
-		if ( checkPrecondition(context)) {
-			if ( Temperature.HOT == context.getTemp()) {
-				return new CommandEvent(this.getId(), "sunglasses", true);
-			} else {
-				return new CommandEvent(this.getId(), "hat", true);
-			}
+	protected CommandEvent handle(CommandEvent input) {
+		if ( Temperature.HOT == input.getTemp()) {
+			return input.addResponse("sunglasses");
 		} else {
-			return new CommandEvent(DressWizard.FAIL_COMM, "fail", false);
-		}	
-		
+			return input.addResponse("hat");
+		}
 	}
+
+	
 
 }

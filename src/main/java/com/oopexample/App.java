@@ -15,7 +15,7 @@ public class App {
 		
 		do {
 			DressWizard dressWizard = new DressWizard();
-			dressWizard.initData();
+			
 			System.out.println("Enter input, seperate by 'space', ex. HOT 8 6 4 2 1 7");
 			System.out.println("Enter 'Q' to quit");
 			sc  = new Scanner(System.in);
@@ -41,9 +41,9 @@ public class App {
 				/*
 				 * run program
 				 */
-				dressWizard.runWizard(temperature, commands);
+				String output = dressWizard.runWizard(temperature, commands);
 				
-				System.out.println("Output: " + dressWizard.output());
+				System.out.println("Output: " + output);
 				System.out.println("");
 			}
 			
