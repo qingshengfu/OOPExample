@@ -7,13 +7,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CommandEvent {
-	private Set<Integer> commandIds;
+	private Set<Integer> finishedCommandIds;
 	private List<String> responses;
 	private Temperature temp;
 	private boolean error;
 	
 	public CommandEvent(Temperature temp) {
-		commandIds = new HashSet<>();
+		finishedCommandIds = new HashSet<>();
 		responses = new ArrayList<>();
 		this.temp = temp;
 	}
@@ -33,12 +33,12 @@ public class CommandEvent {
 	}
 	
 	public CommandEvent addFinishedCommand(Integer commandId) {
-		commandIds.add(commandId);
+		finishedCommandIds.add(commandId);
 		return this;
 	}
 	
 	public boolean isCommandFinished(Integer commandId) {
-		return commandIds.contains(commandId);
+		return finishedCommandIds.contains(commandId);
 	}
 
 	public Temperature getTemp() {
